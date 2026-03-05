@@ -23,3 +23,30 @@ export async function listUsers() {
     }
     
 }
+// UPDATE USER
+export async function updateUser(id, values, avatarFile) {
+  try {
+    
+
+    const payload = {
+      ...values,
+      dob: values.dob ? format(values.dob, "yyyy-MM-dd") : undefined,
+      avatar: avatarFilename
+    };
+
+    const response = await axiosClient.put("/user/update/" + id, payload);
+
+    return response;
+
+  } catch (error) {
+   throw error(error.response.data.message);
+  }
+}
+export async function getUserById(id) {
+  try {
+    const response = await axiosClient.get("/user/" + id);
+    return response;
+  } catch (error) {
+     throw error(error.response.data.message);
+  }
+}
