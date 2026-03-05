@@ -1,7 +1,6 @@
 import { Divider, message, Space, Table, Tag, Button, Avatar } from 'antd'
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
-import axiosClient from '../utils/axiosClient'
 import { useNavigate } from 'react-router-dom';
 import EditUserDrawer from '../components/EditUserDrawer';
 import { UserOutlined } from '@ant-design/icons';

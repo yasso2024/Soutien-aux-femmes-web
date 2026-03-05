@@ -1,8 +1,9 @@
 import {Button, Form, Input, message} from "antd";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosClient from "../utils/axiosClient";
+
 import { AuthContext } from "../contexts/AuthContext";
+import { authUser } from "../api/auth";
 
 function Login() {
     const {setToken} = useContext(AuthContext);
@@ -10,14 +11,14 @@ function Login() {
 
     async function onFinish(values) {
         try {
-            const response = await axiosClient.post('/auth/login', values);
+            const response = await authUser(values);
 
             setToken(response.data.token);
             message.success(response.data.message);
 
             navigate("/");
         } catch (error) {
-            message.error(error.response.data.message);
+            message.error(error.message);
         }
     };
     return (

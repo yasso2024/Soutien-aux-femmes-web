@@ -1,11 +1,10 @@
 import { Divider, Form, Input, Button, DatePicker, Select, message, Avatar, Upload } from 'antd'
-import { format } from 'date-fns';
-import axiosClient from '../utils/axiosClient';
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CameraOutlined, UserOutlined } from '@ant-design/icons';
 import { uplaodFile } from '../api/files';
+import { getUserById, updateUser } from '../api/users';
 
 const EditUser = () => {
   const [form] = Form.useForm();
@@ -20,7 +19,7 @@ const EditUser = () => {
   useEffect(() => {
     async function getById() {
       try {
-        const response = await axiosClient.get('/user/' + id);
+        const response = await getUserById(id);;
 
         form.setFieldsValue({
           ...response.data.user,
@@ -29,7 +28,7 @@ const EditUser = () => {
 
         setAvatar(response.data.user.avatar);
       } catch (error) {
-        message.error(error.response.data.message);
+         message.error(error.message);
       }
     }
 
@@ -56,18 +55,14 @@ const  uploadRes=await uplaodFile(avatarFile);
         avatarFilename = uploadRes.data.file.filename;
       }
       
-      const payload = {
-        ...values,
-        dob: values.dob ? format(values.dob, "yyyy-MM-dd") : undefined,
-        avatar: avatarFilename
-      }
+     
 
-      const response = await axiosClient.put('/user/update/' + id, payload);
+      const response = await updateUser(id, values, avatarFile) ;
 
       message.success(response.data.message);
       navigate('/user/list');
     } catch (error) {
-      message.error(error.response.data.message);
+      message.error(error.message || "Something went wrong");
     }
   }
 

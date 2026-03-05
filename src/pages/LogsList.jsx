@@ -1,7 +1,8 @@
 import { format } from 'date-fns'
 import { useState, useEffect } from 'react'
-import axiosClient from '../utils/axiosClient'
+
 import { Divider, message, Table } from 'antd';
+import { getLogs } from '../api/logs';
 
 
 const LogsList = () => {
@@ -24,11 +25,10 @@ const LogsList = () => {
     useEffect(() => {
         async function fetchLogs() {
             try {
-                const response = await axiosClient('/logs/');
+                const response = await await getLogs();
 
                 setLogs(response.data.logs);
-            } catch (error) {
-                message.error(error.response.data.message)
+            } catch (error) {message.error(error.message);
             }
         };
 
