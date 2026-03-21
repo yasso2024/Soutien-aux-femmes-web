@@ -16,8 +16,7 @@ const DemandesList = () => {
   const [demandes, setDemandes] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const { user } = useContext(AuthContext);
-
-  useEffect(() => {
+ useEffect(() => {
     async function fetchData() {
       try {
         const params = {};

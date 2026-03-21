@@ -36,8 +36,7 @@ const DonsList = () => {
       message.error(error.message || 'Erreur lors de la confirmation');
     }
   };
-
-  const handleDelete = async (id) => {
+ const handleDelete = async (id) => {
     try {
       const response = await deleteDon(id);
       message.success(response.data.message);
@@ -46,8 +45,7 @@ const DonsList = () => {
       message.error(error.message || 'Erreur lors de la suppression');
     }
   };
-
-  const columns = [
+ const columns = [
     {
       title: 'Montant',
       dataIndex: 'montant',
