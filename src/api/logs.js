@@ -6,6 +6,6 @@ export async function getLogs() {
     return response;
 
   } catch (error) {
-    throw error(error.response.data.message);
+    throw new error(error.response.data.message);
   }
 }

@@ -7,7 +7,7 @@ import { CameraOutlined, UserOutlined } from "@ant-design/icons";
 import { uplaodFile } from "../api/files";
 
 const EditUserDrawer = (props) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const [form] = Form.useForm();
     const [avatar, setAvatar] = useState(null);
     const [avatarFile, setAvatarFile] = useState(null);
@@ -29,7 +29,7 @@ const EditUserDrawer = (props) => {
         });
 
         setAvatar(userDetails.avatar);
-    }, [])
+    }, [form, userDetails])
 
     const beforeUpload = (file) => {
         setAvatarFile(file);
@@ -124,8 +124,12 @@ const EditUserDrawer = (props) => {
                     >
                         <Select
                             options={[
-                                { value: "ADMIN", label: "Admin" },
-                                { value: "USER", label: "User" }
+                                { value: 'USER', label: 'User' },
+                { value: 'FEMME MALADE', label: 'Femme Malade' },
+                { value: 'ADMINISTRATEUR', label: 'Administrateur' },
+                { value: 'BENEVOLE', label: 'Bénévole' },
+                { value: 'DONTEUR', label: 'Donateur' },
+                { value: 'ASSOCIATION', label: 'Association' },
                             ]}
                         />
                     </Form.Item>

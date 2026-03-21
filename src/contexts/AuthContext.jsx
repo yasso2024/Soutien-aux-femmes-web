@@ -6,7 +6,11 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('auth-token') || null);
     const[user,setUser]=useState(null);
-
+const logout = () => {
+    localStorage.removeItem('auth-token');
+    setToken(null);
+    setUser(null);
+  };
     useEffect(() => {
         async function fetchMe() {
             try {
@@ -21,11 +25,14 @@ export const AuthProvider = ({ children }) => {
         if (token) {
             localStorage.setItem('auth-token', token);
             fetchMe();
-        }
+        } else {
+      localStorage.removeItem('auth-token');
+      setUser(null);
+    }
     }, [token]);
 
     return (
-        <AuthContext.Provider value={{token, setToken, user,setUser}} >
+        <AuthContext.Provider value={{token, setToken, user,setUser, logout }} >
             {children}
         </AuthContext.Provider>
     )
