@@ -1,6 +1,6 @@
 import { Button, Col, Divider, Form, Input, message, Row } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import { resetPassword } from "../api/auth";
+import { resetPassword } from "../../api/auth";
 
 function ResetPassword() {
     const { token } = useParams();

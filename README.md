@@ -1,16 +1,117 @@
-# React + Vite
+# Frontend - Backoffice Admin
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React backoffice admin application used to manage platform data (users, demandes, dons, affectations, events, logs).
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19
+- Vite
+- React Router
+- Ant Design
+- Axios
 
-## React Compiler
+## Main Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Authentication (login, signup, forgot/reset password)
+- Admin dashboard
+- User management
+- Role-specific listings (femmes, benevoles, associations, donateurs)
+- Demandes and dons management
+- Affectations and events management
+- Logs viewer
+- Profile and password change
 
-## Expanding the ESLint configuration
+## Positionnement dans l'architecture
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Ce projet `frontend` correspond au backoffice administrateur.
+
+Le dashboard administrateur permet de :
+- gerer les utilisateurs ;
+- valider les demandes et contenus ;
+- suivre les actions, les affectations et les dons ;
+- consulter les logs et indicateurs globaux pour le pilotage de la plateforme.
+
+## Project Structure
+
+```text
+frontend/
+	src/
+		api/                        # API calls grouped by domain
+		components/
+			route/ProtectedRoute.jsx  # Route guard
+			layout/                   # Sidebar/topbar components
+		contexts/
+			AuthContext.jsx           # Auth token and current user state
+		layouts/
+			AdminLayout.jsx
+		pages/
+			admin/                    # Backoffice screens
+			shared/                   # Auth/profile shared pages
+		utils/
+			axiosClient.js            # Axios instance + interceptors
+```
+
+## Routing Overview
+
+Public routes:
+- `/login`
+- `/signup`
+- `/forgot-password`
+- `/reset-password/:token`
+
+Protected routes (authenticated):
+- `/profile`
+- `/change-password`
+
+Admin-only routes (`ADMINISTRATEUR` role):
+- `/dashboard`
+- `/user/list`
+- `/user/add`
+- `/user/edit/:id`
+- `/femmes`
+- `/benevoles`
+- `/associations`
+- `/donateurs`
+- `/demandes`
+- `/dons`
+- `/affectations`
+- `/events`
+- `/logs/list`
+
+## Environment Variables
+
+Create `.env` in `frontend/`:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+## Install and Run
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Build and preview:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Authentication Behavior
+
+- Token key used by this app: `auth-token`
+- Token is added automatically by Axios interceptor
+- On `401`, token is removed and user is redirected to `/login`
+
+## Notes
+
+- This app is focused on backoffice/admin workflows.
+- If another frontend is already running on port `5173`, start this app with another port:
+
+```bash
+npm run dev -- --port 5174
+```

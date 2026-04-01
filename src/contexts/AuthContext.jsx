@@ -1,39 +1,47 @@
-import { createContext, useState, useEffect } from "react";
-import axiosClient from "../utils/axiosClient";
+import { createContext, useEffect, useState } from "react";
+import { getMe } from "../api/auth";
 
 export const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(localStorage.getItem('auth-token') || null);
-    const[user,setUser]=useState(null);
-const logout = () => {
-    localStorage.removeItem('auth-token');
+export default function AuthProvider({ children }) {
+  const [token, setToken] = useState(localStorage.getItem("auth-token"));
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const logout = () => {
+    localStorage.removeItem("auth-token");
     setToken(null);
     setUser(null);
   };
-    useEffect(() => {
-        async function fetchMe() {
-            try {
-                const response= await axiosClient.get('/auth/me');
 
-                setUser(response.data.user);
+  useEffect(() => {
+    async function loadUser() {
+      setLoading(true);
 
-            } catch (error) {
-                console.log(error.response.data.message)
-            }
+      try {
+        if (!token) {
+          setUser(null);
+          return;
         }
-        if (token) {
-            localStorage.setItem('auth-token', token);
-            fetchMe();
-        } else {
-      localStorage.removeItem('auth-token');
-      setUser(null);
-    }
-    }, [token]);
 
-    return (
-        <AuthContext.Provider value={{token, setToken, user,setUser, logout }} >
-            {children}
-        </AuthContext.Provider>
-    )
-};
+        localStorage.setItem("auth-token", token);
+        const response = await getMe();
+        setUser(response.data.user);
+      } catch {
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUser();
+  }, [token]);
+
+  return (
+    <AuthContext.Provider
+      value={{ token, setToken, user, setUser, loading, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}

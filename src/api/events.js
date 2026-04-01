@@ -1,40 +1,41 @@
 import axiosClient from "../utils/axiosClient";
 
-export async function listDemandes() {
+export async function listEvents() {
   try {
-    return await axiosClient.get("/demandes");
+    // ✅ backend route الصحيح: /evenements
+    return await axiosClient.get("/evenements");
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function createDemande(values) {
+export async function getEventById(id) {
   try {
-    return await axiosClient.post("/demandes", values);
+    return await axiosClient.get(`/evenements/${id}`);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function updateStatutDemande(id, statut) {
+export async function createEvent(values) {
   try {
-    return await axiosClient.put(`/demandes/${id}/statut`, { statut });
+    return await axiosClient.post("/evenements", values);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function getDemandeById(id) {
+export async function updateEvent(id, values) {
   try {
-    return await axiosClient.get(`/demandes/${id}`);
+    return await axiosClient.put(`/evenements/${id}`, values);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function deleteDemande(id) {
+export async function deleteEvent(id) {
   try {
-    return await axiosClient.delete(`/demandes/${id}`);
+    return await axiosClient.delete(`/evenements/${id}`);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
