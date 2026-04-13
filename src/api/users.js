@@ -59,6 +59,14 @@ export async function listBenevoles() {
   }
 }
 
+export async function savePlayerID(playerId) {
+  try {
+    return await axiosClient.put('/user/player-id', { playerId });
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || error.message);
+  }
+}
+
 export async function listFemmes() {
   try {
     return await axiosClient.get("/user?role=FEMME%20MALADE");
