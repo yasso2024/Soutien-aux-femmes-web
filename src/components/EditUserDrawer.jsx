@@ -1,145 +1,155 @@
-import { useEffect, useState } from "react";
-import { Button, Drawer, Form, Input, DatePicker, Select, message, Avatar, Upload } from "antd";
+import {
+  Drawer,
+  Divider,
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Select,
+  App,
+  Avatar,
+  Upload,
+} from "antd";
 import dayjs from "dayjs";
-import { format } from "date-fns";
-import axiosClient from '../utils/axiosClient'
+import { useEffect, useState } from "react";
 import { CameraOutlined, UserOutlined } from "@ant-design/icons";
-import { uplaodFile } from "../api/files";
+import { uploadFile } from "../api/files";
+import { updateUser } from "../api/users";
 
-const EditUserDrawer = (props) => {
-    const [open, setOpen] = useState(true);
-    const [form] = Form.useForm();
-    const [avatar, setAvatar] = useState(null);
-    const [avatarFile, setAvatarFile] = useState(null);
-    const [avatarPreview, setAvatarPreview] = useState(null);
+const EditUserDrawer = ({ open, setOpen, userDetails, refresh, setRefresh }) => {
+  const { message } = App.useApp();
+  const [form] = Form.useForm();
+  const [avatar, setAvatar] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
 
-    const { userDetails, refresh, setRefresh } = props;
+  useEffect(() => {
+    if (open && userDetails) {
+      form.setFieldsValue({
+        ...userDetails,
+        dob: userDetails.dob ? dayjs(userDetails.dob) : null,
+      });
 
-    const showDrawer = () => {
-        setOpen(true);
-    };
-    const onClose = () => {
-        setOpen(false);
-    };
-
-    useEffect(() => {
-        form.setFieldsValue({
-            ...userDetails,
-            ...(userDetails.dob && { dob: dayjs(userDetails.dob) })
-        });
-
-        setAvatar(userDetails.avatar);
-    }, [form, userDetails])
-
-    const beforeUpload = (file) => {
-        setAvatarFile(file);
-
-        setAvatarPreview(URL.createObjectURL(file));
-        return false;
+      setAvatar(userDetails.avatar || null);
+      setAvatarFile(null);
+      setAvatarPreview(null);
     }
+  }, [open, userDetails, form]);
 
-    async function onFinish(values) {
-        try {
-            let avatarFilename = avatar;
+  const beforeUpload = (file) => {
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+    return false;
+  };
 
-            if (avatarFile) {
-                 const uploadRes= await uplaodFile(avatarFile);
-               
+  async function onFinish(values) {
+    try {
+      if (!userDetails) return;
 
-                avatarFilename = uploadRes.data.file.filename;
-            }
+      let avatarFilename = avatar;
 
-            const payload = {
-                ...values,
-                dob: values.dob ? format(values.dob, "yyyy-MM-dd") : undefined,
-                avatar: avatarFilename
-            }
+      if (avatarFile) {
+        const uploadRes = await uploadFile(avatarFile);
+        avatarFilename = uploadRes?.data?.file?.filename || avatar;
+      }
 
-            const response = await axiosClient.put('/user/update/' + userDetails._id, payload);
+     const payload = {
+  ...values,
+  dob: values.dob ? values.dob.format("YYYY-MM-DD") : undefined,
+  avatar: avatarFilename,
+};
 
-            message.success(response.data.message);
-            setRefresh(!refresh);
-            onClose();
-        } catch (error) {
-            message.error(error.response.data.message);
-        }
+      const response = await updateUser(userDetails._id || userDetails.id, payload);
+
+      message.success(response?.data?.message || "User updated successfully");
+      setOpen(false);
+      setRefresh(!refresh);
+    } catch (error) {
+      message.error(
+        error?.response?.data?.message || error?.message || "Something went wrong"
+      );
     }
-    return (
-        <>
-            <Button type='primary' size='small' onClick={showDrawer}>
-                Edit
-            </Button>
-            <Drawer
-                title="Edit User"
-                closable={{ 'aria-label': 'Close Button' }}
-                onClose={onClose}
-                open={open}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-                    <Avatar
-                        size={80}
-                        src={avatarPreview || (avatar ? `http://localhost:3000/uploads/${avatar}` : undefined)}
-                        icon={!avatarPreview && !avatar && <UserOutlined />}
-                    />
-                    <Upload beforeUpload={beforeUpload} showUploadList={false} accept={"image/*"}>
-                        <Button icon={<CameraOutlined />}>
-                            {avatarPreview ? 'Change Picture' : "Add Profile Picture"}
-                        </Button>
-                    </Upload>
-                </div>
-                <Form onFinish={onFinish} form={form} layout="vertical">
-                    <Form.Item
-                        label='Email'
-                        name='email'
-                        rules={[{ required: true, message: "Email is required" }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label='First Name'
-                        name='firstName'
-                        rules={[{ required: true, message: "First Name is required" }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label='Last Name'
-                        name='lastName'
-                        rules={[{ required: true, message: "Last Name is required" }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label='Date Of Birth'
-                        name='dob'
-                    >
-                        <DatePicker style={{ width: "100%" }} />
-                    </Form.Item>
-                    <Form.Item
-                        label='Account Type'
-                        name='role'
-                        rules={[{
-                            required: true, message: "Account type is required"
-                        }]}
-                    >
-                        <Select
-                            options={[
-                                { value: 'USER', label: 'User' },
-                { value: 'FEMME MALADE', label: 'Femme Malade' },
-                { value: 'ADMINISTRATEUR', label: 'Administrateur' },
-                { value: 'BENEVOLE', label: 'Bénévole' },
-                { value: 'DONTEUR', label: 'Donateur' },
-                { value: 'ASSOCIATION', label: 'Association' },
-                            ]}
-                        />
-                    </Form.Item>
-                    <Button type='primary' htmlType='submit'>
-                        Edit
-                    </Button>
-                </Form>
-            </Drawer>
-        </>
-    );
-}
+  }
 
-export default EditUserDrawer
+  return (
+    <Drawer
+      title="Edit User"
+      open={open}
+      onClose={() => setOpen(false)}
+      size="large"
+      destroyOnClose
+      forceRender
+    >
+      <Divider />
+
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+        <Avatar
+          size={80}
+          src={
+            avatarPreview ||
+            (avatar ? `http://localhost:3000/uploads/${avatar}` : undefined)
+          }
+          icon={!avatarPreview && !avatar && <UserOutlined />}
+        />
+
+        <Upload beforeUpload={beforeUpload} showUploadList={false} accept="image/*">
+          <Button icon={<CameraOutlined />}>
+            {avatarPreview ? "Change Picture" : "Add Profile Picture"}
+          </Button>
+        </Upload>
+      </div>
+
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[{ required: true, message: "Email is required" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="First Name"
+          name="firstName"
+          rules={[{ required: true, message: "First Name is required" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Last Name"
+          name="lastName"
+          rules={[{ required: true, message: "Last Name is required" }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Date Of Birth" name="dob">
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+
+        <Form.Item
+          label="Account Type"
+          name="role"
+          rules={[{ required: true, message: "Account type is required" }]}
+        >
+          <Select
+            options={[
+              { value: "ADMINISTRATEUR", label: "Administrateur" },
+              { value: "BENEVOLE", label: "Bénévole" },
+              { value: "FEMME MALADE", label: "Femme malade" },
+              { value: "ASSOCIATION", label: "Association" },
+              { value: "DONTEUR", label: "Donateur" },
+            ]}
+          />
+        </Form.Item>
+
+        <Button type="primary" htmlType="submit">
+          Edit
+        </Button>
+      </Form>
+    </Drawer>
+  );
+};
+
+export default EditUserDrawer;

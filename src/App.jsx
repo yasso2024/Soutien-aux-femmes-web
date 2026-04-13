@@ -1,34 +1,34 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useContext } from "react";
-import { ConfigProvider } from "antd";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ConfigProvider, App as AntdApp } from "antd";
 
-import { AuthContext } from "./contexts/AuthContext";
-import MainLayout from "./layouts/MainLayout";
+// auth pages
+import Login from "./pages/shared/Login";
+import Signup from "./pages/shared/Signup";
+import ForgotPassword from "./pages/shared/ForgotPassword";
+import ResetPassword from "./pages/shared/ResetPassword";
+import Profile from "./pages/shared/Profile";
+import ChangePassword from "./pages/shared/ChangePassword";
 
-import Login from "./pages/Login";
-import Home from "./pages/Home";
-import SignUp from "./pages/SignUp";
-import UsersList from "./pages/UsersList";
-import AddUser from "./pages/AddUser";
-import EditUser from "./pages/EditUser";
-import LogsList from "./pages/LogsList";
-import Profile from "./pages/Profile";
-import ChangePassword from "./pages/ChangePassword";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import DemandesList from './pages/DemandesList';
-import AddDemande from './pages/AddDemande';
-import BenevolesList from './pages/BenevolesList';
-import AssociationsList from './pages/AssociationsList';
-import DonsList from './pages/DonsList';
-import AddDon from './pages/AddDon';
-import FemmesList from './pages/FemmesList';
-import DonateursList from './pages/DonateursList';
-import AffectationsList from './pages/AffectationsList';
+// admin pages
+import Dashboard from "./pages/admin/Dashboard";
+import UsersList from "./pages/admin/UsersList";
+import AddUser from "./pages/admin/AddUser";
+import EditUser from "./pages/admin/EditUser";
+import FemmesList from "./pages/admin/FemmesList";
+import BenevolesList from "./pages/admin/BenevolesList";
+import AssociationsList from "./pages/admin/AssociationsList";
+import DonateursList from "./pages/admin/DonateursList";
+import DemandesList from "./pages/admin/DemandesList";
+import PropositionsList from "./pages/admin/PropositionsList";
+import DonsList from "./pages/admin/DonsList";
+import AffectationsList from "./pages/admin/AffectationsList";
+import Events from "./pages/admin/Events";
+import LogsList from "./pages/admin/LogsList";
+
+import AdminLayout from "./layouts/AdminLayout";
+import ProtectedRoute from "./components/route/ProtectedRoute";
 
 function App() {
-  const { token } = useContext(AuthContext);
-
   return (
     <ConfigProvider
       theme={{
@@ -38,38 +38,51 @@ function App() {
         },
       }}
     >
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-<Route path="/inscription" element={<SignUp />} />
-         
-          {token ? (
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Home />} />
-              <Route path="user/add" element={<AddUser />} />
-              <Route path="user/edit/:id" element={<EditUser />} />
-              <Route path="user/list" element={<UsersList />} />
-              <Route path="logs/list" element={<LogsList />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="change-password" element={<ChangePassword />} />
-              <Route path="demandes" element={<DemandesList />} />
-              <Route path="demandes/add" element={<AddDemande />} />
-              <Route path="dons" element={<DonsList />} />
-              <Route path="dons/add" element={<AddDon />} />
-              <Route path="femmes" element={<FemmesList />} />
-              <Route path="benevoles" element={<BenevolesList />} />
-              <Route path="associations" element={<AssociationsList />} />
-              <Route path="donateurs" element={<DonateursList />} />
-<Route path="affectations" element={<AffectationsList />} />
+      <AntdApp>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/change-password" element={<ChangePassword />} />
             </Route>
-          ) : (
-            <Route path="*" element={<Login />} />
-          )}
-        </Routes>
-      </BrowserRouter>
+
+            <Route
+              element={
+                <ProtectedRoute roles={["ADMINISTRATEUR"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/user/list" element={<UsersList />} />
+              <Route path="/user/add" element={<AddUser />} />
+              <Route path="/user/edit/:id" element={<EditUser />} />
+              <Route path="/femmes" element={<FemmesList />} />
+              <Route path="/benevoles" element={<BenevolesList />} />
+              <Route path="/associations" element={<AssociationsList />} />
+              <Route path="/donateurs" element={<DonateursList />} />
+              <Route path="/demandes" element={<DemandesList />} />
+              <Route path="/propositions-aide" element={<PropositionsList />} />
+              <Route path="/dons" element={<DonsList />} />
+              <Route path="/affectations" element={<AffectationsList />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/logs/list" element={<LogsList />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AntdApp>
     </ConfigProvider>
   );
 }

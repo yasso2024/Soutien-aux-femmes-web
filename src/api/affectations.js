@@ -1,40 +1,40 @@
 import axiosClient from "../utils/axiosClient";
 
-export async function listDemandes() {
+export async function listAffectations() {
   try {
-    return await axiosClient.get("/demandes");
+    return await axiosClient.get("/affectations");
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function createDemande(values) {
+export async function createAffectation(data) {
   try {
-    return await axiosClient.post("/demandes", values);
+    return await axiosClient.post("/affectations", data);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function updateStatutDemande(id, statut) {
+export async function updateAffectation(id, data) {
   try {
-    return await axiosClient.put(`/demandes/${id}/statut`, { statut });
+    return await axiosClient.put(`/affectations/${id}`, data);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function getDemandeById(id) {
+export async function deleteAffectation(id) {
   try {
-    return await axiosClient.get(`/demandes/${id}`);
+    return await axiosClient.delete(`/affectations/${id}`);
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
 
-export async function deleteDemande(id) {
+export async function listActionsSolidaires() {
   try {
-    return await axiosClient.delete(`/demandes/${id}`);
+    return await axiosClient.get("/actions-solidaires");
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
