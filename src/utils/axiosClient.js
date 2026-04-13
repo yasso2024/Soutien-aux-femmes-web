@@ -2,7 +2,7 @@ import axios from 'axios';
 import { message } from 'antd'
 
 const axiosClient = axios.create({
-    baseURL:import .meta.env.VITE_API_URL
+   baseURL: import.meta.env.VITE_API_URL
 });
 
 axiosClient.interceptors.request.use(

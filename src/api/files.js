@@ -10,6 +10,6 @@ export async function uplaodFile(avatarFile) {
                 });
                 return uploadRes;
     } catch (error) {
-        throw error(error.response.data.message);
+        throw new error(error.response.data.message);
     }
 }

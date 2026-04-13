@@ -12,14 +12,14 @@ try {
       return response;
 
 } catch (error) {
-     throw error(error.response.data.message);
+     throw new error(error.response.data.message);
 }
 }
 export async function listUsers() {
     try {
          return await axiosClient.get('/user');
     } catch (error) {
-         throw error(error.response.data.message);
+          throw new error(error.response.data.message);
     }
     
 }
@@ -39,7 +39,7 @@ export async function updateUser(id, values, avatarFile) {
     return response;
 
   } catch (error) {
-   throw error(error.response.data.message);
+   throw new error(error.response.data.message);
   }
 }
 export async function getUserById(id) {
@@ -47,6 +47,6 @@ export async function getUserById(id) {
     const response = await axiosClient.get("/user/" + id);
     return response;
   } catch (error) {
-     throw error(error.response.data.message);
+     throw new error(error.response.data.message);
   }
 }
