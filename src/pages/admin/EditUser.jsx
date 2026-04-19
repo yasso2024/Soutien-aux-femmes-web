@@ -74,7 +74,7 @@ const EditUser = () => {
 
   return (
     <div>
-      <h4>Edit User</h4>
+      <h4>Modifier l'utilisateur</h4>
       <Divider />
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
         <Avatar
@@ -84,7 +84,7 @@ const EditUser = () => {
         />
         <Upload beforeUpload={beforeUpload} showUploadList={false} accept={"image/*"}>
           <Button icon={<CameraOutlined />}>
-            {avatarPreview ? 'Change Picture' : "Add Profile Picture"}
+            {avatarPreview ? 'Change Picture' : "ajouter une photo de profil"}
           </Button>
         </Upload>
       </div>
@@ -98,7 +98,7 @@ const EditUser = () => {
         </Form.Item>
 
         <Form.Item
-          label="First Name"
+          label="prénom"
           name="firstName"
           rules={[{ required: true, message: "First Name is required" }]}
         >
@@ -106,19 +106,19 @@ const EditUser = () => {
         </Form.Item>
 
         <Form.Item
-          label="Last Name"
+          label="Nom"
           name="lastName"
           rules={[{ required: true, message: "Last Name is required" }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item label="Date Of Birth" name="dob">
+        <Form.Item label="Date de naissance" name="dob">
           <DatePicker style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
-          label="Account Type"
+          label="Type de compte"
           name="role"
           rules={[{ required: true, message: "Account type is required" }]}
         >
@@ -137,7 +137,7 @@ const EditUser = () => {
         </Form.Item>
 
         <Button type="primary" htmlType="submit">
-          Edit
+          Modifier
         </Button>
       </Form>
     </div>

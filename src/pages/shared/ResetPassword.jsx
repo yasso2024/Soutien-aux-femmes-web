@@ -22,14 +22,14 @@ function ResetPassword() {
             <Row justify="center" align='middle' style={{ height: "100vh" }}>
                 <Col span={6} style={{ borderRadius: "13px", backgroundColor: "#FAFAFA", padding: 24, boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px" }}>
                     <Divider>
-                        Reset Password
+                        oublier le mot de passe
                     </Divider>
                     <Form
                         layout="vertical"
                         onFinish={onFinish}
                     >
                         <Form.Item
-                            label="Password"
+                            label="Nauveau mot de passe"
                             name='newPassword'
                             rules={[
                                 { required: true, message: "Password is required" },
@@ -39,7 +39,7 @@ function ResetPassword() {
                             <Input.Password />
                         </Form.Item>
                         <Form.Item
-                            label="Confirm Password"
+                            label=" Confirmer le nouveau mot de passe"
                             name='confirmNewPassword'
                             rules={[
                                 { required: true, message: "Confirm Password is required" },
@@ -50,7 +50,7 @@ function ResetPassword() {
                         </Form.Item>
                         <div style={{ display: "flex", flexDirection: 'column', gap: 14 }}>
                             <Button type="primary" htmlType="submit">
-                                Reset
+                               Envoyer
                             </Button>
                         </div>
                     </Form>

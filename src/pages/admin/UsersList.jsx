@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import EditUserDrawer from "../../components/EditUserDrawer";
 import { UserOutlined, SearchOutlined } from "@ant-design/icons";
-import { listUsers } from "../../api/users";
+import { listUsers, deleteUser } from "../../api/users";
 
 const { Title, Text } = Typography;
 const INDIGO = "#4F46E5";
@@ -17,13 +17,32 @@ const roleColor = {
 };
 
 const UsersList = () => {
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const [users, setUsers] = useState([]);
   const [refresh, setRefresh] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const handleDelete = (record) => {
+    modal.confirm({
+      title: "Supprimer l'utilisateur",
+      content: `Êtes-vous sûr de vouloir supprimer ${record.firstName} ${record.lastName} ?`,
+      okText: "Oui",
+      cancelText: "Non",
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          await deleteUser(record._id || record.id);
+          message.success("Utilisateur supprimé avec succès");
+          setRefresh(!refresh);
+        } catch (error) {
+          message.error(error.message || "Erreur lors de la suppression");
+        }
+      },
+    });
+  };
 
   const filtered = users.filter((u) => {
     const q = search.toLowerCase();
@@ -89,8 +108,13 @@ const UsersList = () => {
       key: "actions",
       render: (_, record) => (
         <Space>
-          <Button type="link" size="small">
-            Details
+          <Button 
+            type="link" 
+            size="small" 
+            danger
+            onClick={() => handleDelete(record)}
+          >
+            Supprimer
           </Button>
           <Button
             type="primary"
@@ -100,7 +124,7 @@ const UsersList = () => {
               setOpenEdit(true);
             }}
           >
-            Edit
+            Modifier
           </Button>
         </Space>
       ),

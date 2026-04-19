@@ -32,6 +32,22 @@ export async function deleteAffectation(id) {
   }
 }
 
+export async function accepterAffectation(id) {
+  try {
+    return await axiosClient.put(`/affectations/${id}`, { statut: "ACCEPTEE" });
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || error.message);
+  }
+}
+
+export async function refuserAffectation(id) {
+  try {
+    return await axiosClient.put(`/affectations/${id}`, { statut: "REFUSEE" });
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || error.message);
+  }
+}
+
 export async function listActionsSolidaires() {
   try {
     return await axiosClient.get("/actions-solidaires");

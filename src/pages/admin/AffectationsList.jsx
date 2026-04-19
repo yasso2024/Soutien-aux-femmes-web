@@ -3,14 +3,11 @@ import {
   Popconfirm, Select, Space, Table, Tag, Typography,
 } from "antd";
 import {
-  DeleteOutlined, PlusOutlined, SearchOutlined, TeamOutlined,
+  DeleteOutlined, PlusOutlined, SearchOutlined, TeamOutlined, CheckOutlined, CloseOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import {
-  createAffectation,
-  deleteAffectation,
-  listActionsSolidaires,
-  listAffectations,
+  accepterAffectation, createAffectation, deleteAffectation, listActionsSolidaires, listAffectations, refuserAffectation,
 } from "../../api/affectations";
 import { listBenevoles } from "../../api/users";
 
@@ -21,6 +18,7 @@ const statutColor = {
   EN_ATTENTE: "orange",
   ACCEPTEE: "green",
   TERMINEE: "default",
+  REFUSEE: "red",
 };
 
 function AffectationsList() {
@@ -78,6 +76,30 @@ function AffectationsList() {
       await deleteAffectation(id);
       setData((prev) => prev.filter((a) => a._id !== id));
       message.success("Affectation supprimée");
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
+
+  const handleAccept = async (id) => {
+    try {
+      await accepterAffectation(id);
+      setData((prev) =>
+        prev.map((a) => (a._id === id ? { ...a, statut: "ACCEPTEE" } : a))
+      );
+      message.success("Affectation acceptée");
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
+
+  const handleRefuse = async (id) => {
+    try {
+      await refuserAffectation(id);
+      setData((prev) =>
+        prev.map((a) => (a._id === id ? { ...a, statut: "REFUSEE" } : a))
+      );
+      message.success("Affectation refusée");
     } catch (err) {
       message.error(err.message);
     }
@@ -154,18 +176,52 @@ function AffectationsList() {
       ),
     },
     {
-      title: "",
+      title: "Actions",
       key: "actions",
-      width: 60,
+      width: 180,
       render: (_, r) => (
-        <Popconfirm
-          title="Supprimer cette affectation ?"
-          onConfirm={() => handleDelete(r._id)}
-          okText="Oui"
-          cancelText="Non"
-        >
-          <Button size="small" danger icon={<DeleteOutlined />} />
-        </Popconfirm>
+        <Space>
+          <Popconfirm
+            title="Accepter cette affectation ?"
+            onConfirm={() => handleAccept(r._id)}
+            okText="Oui"
+            cancelText="Non"
+            disabled={r.statut !== "EN_ATTENTE"}
+          >
+            <Button
+              size="small"
+              type="primary"
+              icon={<CheckOutlined />}
+              disabled={r.statut !== "EN_ATTENTE"}
+            >
+              Accepter
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            title="Refuser cette affectation ?"
+            onConfirm={() => handleRefuse(r._id)}
+            okText="Oui"
+            cancelText="Non"
+            disabled={r.statut !== "EN_ATTENTE"}
+          >
+            <Button
+              size="small"
+              danger
+              icon={<CloseOutlined />}
+              disabled={r.statut !== "EN_ATTENTE"}
+            >
+              Refuser
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            title="Supprimer cette affectation ?"
+            onConfirm={() => handleDelete(r._id)}
+            okText="Oui"
+            cancelText="Non"
+          >
+            <Button size="small" danger icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </Space>
       ),
     },
   ];

@@ -24,6 +24,14 @@ export async function confirmerDon(id) {
   }
 }
 
+export async function refuserDon(id) {
+  try {
+    return await axiosClient.put(`/dons/${id}/refuse`);
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || error.message);
+  }
+}
+
 export async function deleteDon(id) {
   try {
     return await axiosClient.delete(`/dons/${id}`);

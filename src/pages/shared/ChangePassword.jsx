@@ -22,7 +22,7 @@ const ChangePassword = () => {
 
     return (
         <div>
-            <h4>Change Password</h4>
+            <h4>Changer le mot de passe</h4>
             <Divider />
             <Form
                 form={form}
@@ -43,7 +43,7 @@ const ChangePassword = () => {
                 </Form.Item>
                 <Form.Item
                     name={'newPassword'}
-                    label="New Password"
+                    label="Nauveau mot de passe"
                     rules={[
                         { required: true, message: "Please enter your current password" },
                         { min: 8, message: "Password must be 8 chars mininum" },
@@ -54,7 +54,7 @@ const ChangePassword = () => {
                 </Form.Item>
                 <Form.Item
                     name={'confirmNewPassword'}
-                    label="Confirm New Password"
+                    label="Confirmer le nouveau mot de passe"
                     rules={[
                         { required: true, message: "Please enter your current password" },
                         { min: 8, message: "Password must be 8 chars mininum" },
@@ -65,7 +65,7 @@ const ChangePassword = () => {
                 </Form.Item>
                 <Form.Item>
                     <Button type='primary' htmlType='submit'>
-                        Change Password
+                        Changer le mot de passe
                     </Button>
                 </Form.Item>
             </Form>

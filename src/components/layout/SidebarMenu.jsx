@@ -14,7 +14,7 @@ function SidebarMenu() {
   const location = useLocation();
 
   const items = [
-    { key: "/dashboard", icon: <DashboardOutlined />, label: "Dashboard" },
+    { key: "/dashboard", icon: <DashboardOutlined />, label: "Home" },
     { key: "/user/list", icon: <UserOutlined />, label: "Users" },
     { key: "/femmes", icon: <UserOutlined />, label: "Femmes" },
     { key: "/benevoles", icon: <TeamOutlined />, label: "Bénévoles" },

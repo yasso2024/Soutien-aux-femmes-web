@@ -10,7 +10,7 @@ function AdminLayout() {
     <Layout style={{ minHeight: "100vh" }}>
       <Sider width={250} theme="light">
         <div style={{ textAlign: "center", padding: 20, fontWeight: 700 }}>
-          SOLIDARITY ADMIN
+         Administrateur Solidarité
         </div>
         <SidebarMenu />
       </Sider>
