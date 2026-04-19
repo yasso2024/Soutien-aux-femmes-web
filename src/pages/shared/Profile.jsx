@@ -9,7 +9,7 @@ const Profile = () => {
 
     return (
         <div>
-            <h4>My Profile</h4>
+            <h4>Mon Profil</h4>
             <Divider />
             <Card style={{ maxWidth: 600 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
@@ -24,21 +24,22 @@ const Profile = () => {
                     </div>
                 </div>
                 <Descriptions column={1} bordered>
-                 <Descriptions.Item label="Email">{user?.email}</Descriptions.Item>                    <Descriptions.Item label='First Name'>{user.firstName}</Descriptions.Item>
-                    <Descriptions.Item label='Last Name'>{user.lastName}</Descriptions.Item>
-                    <Descriptions.Item label='Date of Birth'>
-                        {user.dob ? new Date(user.dob).toLocaleDateString() : '-'}
+                    <Descriptions.Item label="Email">{user?.email}</Descriptions.Item>
+                    <Descriptions.Item label="Prénom">{user?.firstName}</Descriptions.Item>
+                    <Descriptions.Item label="Nom de famille">{user?.lastName}</Descriptions.Item>
+                    <Descriptions.Item label="Date de naissance">
+                        {user?.dob ? new Date(user.dob).toLocaleDateString() : '-'}
                     </Descriptions.Item>
-                    <Descriptions.Item label='Role'>
-                        <Tag color={user.role === 'ADMINISTRATEUR' ? "geekblue" : "green"}>{user.role}</Tag>
+                    <Descriptions.Item label="Rôle">
+                        <Tag color={user?.role === 'ADMINISTRATEUR' ? "geekblue" : "green"}>{user?.role}</Tag>
                     </Descriptions.Item>
-                    <Descriptions.Item label='Creation Date'>
-                        {new Date(user.createdAt).toLocaleDateString()}
+                    <Descriptions.Item label="Date de création">
+                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
                     </Descriptions.Item>
                 </Descriptions>
                 <div style={{marginTop: 16}}>
                     <Link to='/change-password'>
-                        <Button icon={<LockOutlined />}>Change Password</Button>
+                        <Button icon={<LockOutlined />}>Changer le mot de passe</Button>
                     </Link>
                 </div>
             </Card>
