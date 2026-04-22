@@ -26,7 +26,7 @@ export async function confirmerDon(id) {
 
 export async function refuserDon(id) {
   try {
-    return await axiosClient.put(`/dons/${id}/refuse`);
+    return await axiosClient.put(`/dons/${id}/statut`, { statut: "REFUSE" });
   } catch (error) {
     throw new Error(error?.response?.data?.message || error.message);
   }
