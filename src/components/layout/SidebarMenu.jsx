@@ -25,6 +25,7 @@ function SidebarMenu() {
     { key: "/dons", icon: <GiftOutlined />, label: "Dons" },
     { key: "/affectations", icon: <FileTextOutlined />, label: "Affectations" },
     { key: "/events", icon: <CalendarOutlined />, label: "Events" },
+    { key: "/actions-solidaires", icon: <TeamOutlined />, label: "Actions solidaires" },
     { key: "/logs/list", icon: <FileTextOutlined />, label: "Logs" },
     { key: "/profile", icon: <UserOutlined />, label: "Profile" },
   ];

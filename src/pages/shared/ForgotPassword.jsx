@@ -14,7 +14,7 @@ function ForgotPassword() {
 
             navigate("/login");
         } catch (error) {
-            message.error(error.response.data.message);
+            message.error(error.message || "Une erreur est survenue.");
         }
     };
     return (

@@ -16,7 +16,7 @@ const ChangePassword = () => {
             navigate("/profile");
         } catch (error) {
             console.log(error);
-            message.error(error?.response?.data?.message);
+            message.error(error?.message || 'Une erreur est survenue');
         }
     }
 

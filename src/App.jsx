@@ -24,6 +24,7 @@ import DonsList from "./pages/admin/DonsList";
 import AffectationsList from "./pages/admin/AffectationsList";
 import Events from "./pages/admin/Events";
 import LogsList from "./pages/admin/LogsList";
+import ActionsSolidairesList from "./pages/admin/ActionsSolidairesList";
 
 import AdminLayout from "./layouts/AdminLayout";
 import ProtectedRoute from "./components/route/ProtectedRoute";
@@ -78,6 +79,7 @@ function App() {
               <Route path="/dons" element={<DonsList />} />
               <Route path="/affectations" element={<AffectationsList />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/actions-solidaires" element={<ActionsSolidairesList />} />
               <Route path="/logs/list" element={<LogsList />} />
             </Route>
           </Routes>

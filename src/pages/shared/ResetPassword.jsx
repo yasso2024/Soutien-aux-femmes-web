@@ -10,11 +10,11 @@ function ResetPassword() {
         try {
             const response = await resetPassword(token, values);
 
-            message.success(response.data.message);
+            message.success(response?.data?.message || "Mot de passe réinitialisé avec succès.");
 
             navigate("/login");
         } catch (error) {
-            message.error(error.response.data.message);
+            message.error(error.message || "Une erreur est survenue.");
         }
     };
     return (
