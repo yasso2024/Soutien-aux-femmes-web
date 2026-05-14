@@ -1,12 +1,13 @@
 import { App, Avatar, Button, Card, Input, Popconfirm, Table, Tag, Typography } from "antd";
-import { CheckOutlined, DollarOutlined, SearchOutlined } from "@ant-design/icons";
+import { CheckOutlined, DollarOutlined, SearchOutlined, CloseOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { confirmerDon, listDons } from "../../api/dons";
+import { confirmerDon, listDons, refuserDon } from "../../api/dons";
+import { isFinalStatus } from "../../utils/statusHelpers";
 
 const { Title, Text } = Typography;
 const GREEN = "#10B981";
 
-const statutColor = { EN_ATTENTE: "orange", CONFIRME: "green" };
+const statutColor = { EN_ATTENTE: "orange", CONFIRME: "green", REFUSE: "red" };
 const typeColor = { FINANCIER: "#3B82F6", MATERIEL: "#8B5CF6" };
 
 function DonsList() {
@@ -31,6 +32,21 @@ function DonsList() {
         prev.map((d) => (d._id === id ? { ...d, statut: "CONFIRME" } : d))
       );
       message.success("Don confirmé");
+    } catch (err) {
+      message.error(err.message);
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const handleRefuse = async (id) => {
+    setLoadingId(id);
+    try {
+      await refuserDon(id);
+      setData((prev) =>
+        prev.map((d) => (d._id === id ? { ...d, statut: "REFUSE" } : d))
+      );
+      message.success("Don refusé");
     } catch (err) {
       message.error(err.message);
     } finally {
@@ -133,25 +149,47 @@ function DonsList() {
     {
       title: "Action",
       key: "action",
-      render: (_, r) => (
-        <Popconfirm
-          title="Confirmer ce don ?"
-          onConfirm={() => handleConfirm(r._id)}
-          okText="Oui"
-          cancelText="Non"
-          disabled={r.statut === "CONFIRME"}
-        >
-          <Button
-            size="small"
-            icon={<CheckOutlined />}
-            style={{ color: GREEN, borderColor: GREEN }}
-            loading={loadingId === r._id}
-            disabled={r.statut === "CONFIRME"}
+      render: (_, r) => {
+        const isFinal = isFinalStatus(r.statut);
+        return (
+        <div style={{ display: "flex", gap: 8 }}>
+          <Popconfirm
+            title="Confirmer ce don ?"
+            onConfirm={() => handleConfirm(r._id)}
+            okText="Oui"
+            cancelText="Non"
+            disabled={isFinal}
           >
-            Confirmer
-          </Button>
-        </Popconfirm>
-      ),
+            <Button
+              size="small"
+              icon={<CheckOutlined />}
+              style={isFinal ? {} : { color: GREEN, borderColor: GREEN }}
+              loading={loadingId === r._id}
+              disabled={isFinal}
+            >
+              Confirmer
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            title="Refuser ce don ?"
+            onConfirm={() => handleRefuse(r._id)}
+            okText="Oui"
+            cancelText="Non"
+            disabled={isFinal}
+          >
+            <Button
+              size="small"
+              danger={!isFinal}
+              icon={<CloseOutlined />}
+              loading={loadingId === r._id}
+              disabled={isFinal}
+            >
+              Refuser
+            </Button>
+          </Popconfirm>
+        </div>
+        );
+      },
     },
   ];
 

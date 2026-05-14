@@ -50,7 +50,7 @@ export default function StatisticsAdmin() {
 
   return (
     <div>
-      <Title level={3}>Dashboard Admin</Title>
+      <Title level={3}>Statistiques Admin</Title>
       <Row gutter={[16, 16]}>
         {cards.map(([title, value]) => (
           <Col xs={24} md={8} lg={6} key={title}>

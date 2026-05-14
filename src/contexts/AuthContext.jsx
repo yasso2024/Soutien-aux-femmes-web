@@ -5,20 +5,53 @@ import { savePlayerID } from "../api/users";
 export const AuthContext = createContext(null);
 
 async function registerOneSignal(userId) {
+  const userIdStr = String(userId);
+  // Persist lock on window — survives Vite HMR module re-execution (module-level vars get reset)
+  window.__oneSignalRegistered = window.__oneSignalRegistered || new Set();
+  if (window.__oneSignalRegistered.has(userIdStr)) return;
+  window.__oneSignalRegistered.add(userIdStr);
+
   try {
-    const OS = window.OneSignal;
-    if (!OS) { console.warn("[OneSignal] SDK not loaded yet"); return; }
-    await OS.login(String(userId));
-    const subscriptionId = OS.User?.PushSubscription?.id;
-    console.log("[OneSignal] linked user:", userId, "| subscription id:", subscriptionId);
-    if (subscriptionId) {
-      await savePlayerID(subscriptionId);
-      console.log("[OneSignal] player id saved to backend:", subscriptionId);
-    } else {
-      console.warn("[OneSignal] no subscription id after login — user may not have opted in yet");
-    }
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    await new Promise((resolve, reject) => {
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        try {
+          // Skip if already linked to this user — avoids the 409 network request entirely
+          const currentId = OneSignal.User?.externalId;
+          if (currentId && currentId === userIdStr) {
+            const subscriptionId = OneSignal.User?.PushSubscription?.id;
+            if (subscriptionId) {
+              await savePlayerID(subscriptionId);
+              console.log("[OneSignal] player id saved to backend:", subscriptionId);
+            }
+            return resolve();
+          }
+
+          await OneSignal.login(userIdStr);
+          const subscriptionId = OneSignal.User?.PushSubscription?.id;
+          console.log("[OneSignal] linked user:", userId, "| subscription id:", subscriptionId);
+          if (subscriptionId) {
+            await savePlayerID(subscriptionId);
+            console.log("[OneSignal] player id saved to backend:", subscriptionId);
+          } else {
+            console.warn("[OneSignal] no subscription id after login — user may not have opted in yet");
+          }
+          resolve();
+        } catch (err) {
+          // 409 = identity already linked — not a real error, keep in set to avoid retrying
+          if (err?.statusCode === 409 || err?.status === 409 || String(err?.message).includes('409')) {
+            console.log("[OneSignal] identity already linked for user", userId);
+            resolve();
+          } else {
+            window.__oneSignalRegistered.delete(userIdStr);
+            reject(err);
+          }
+        }
+      });
+    });
   } catch (err) {
     console.warn("OneSignal registration failed:", err.message);
+    window.__oneSignalRegistered.delete(userIdStr);
   }
 }
 

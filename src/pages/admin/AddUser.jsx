@@ -43,7 +43,7 @@ const AddUser = () => {
 
   return (
     <div>
-      <h4>Create New User</h4>
+      <h4>Créer un nouvel utilisateur</h4>
       <Divider />
 
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
@@ -54,7 +54,7 @@ const AddUser = () => {
         />
         <Upload beforeUpload={beforeUpload} showUploadList={false} accept="image/*">
           <Button icon={<CameraOutlined />}>
-            {avatarPreview ? "Change Picture" : "Add Profile Picture"}
+            {avatarPreview ? "Change Picture" : "Ajouter une photo de profil"}
           </Button>
         </Upload>
       </div>
@@ -72,34 +72,34 @@ const AddUser = () => {
         </Form.Item>
 
         <Form.Item
-          label="First Name"
+          label="Prénom"
           name="firstName"
-          rules={[{ required: true, message: "First Name is required" }]}
+          rules={[{ required: true, message: "Prénom is required" }]}
         >
           <Input autoComplete="given-name" />
         </Form.Item>
 
         <Form.Item
-          label="Last Name"
+          label="Nom"
           name="lastName"
-          rules={[{ required: true, message: "Last Name is required" }]}
+          rules={[{ required: true, message: "Nom is required" }]}
         >
           <Input autoComplete="family-name" />
         </Form.Item>
 
         <Form.Item
-          label="Password"
+          label="Mot de passe"
           name="password"
           rules={[
-            { required: true, message: "Password is required" },
-            { min: 8, message: "Password must be 8 chars minimum" },
+            { required: true, message: "Mot de passe is required" },
+            { min: 8, message: "Mot de passe must be 8 chars minimum" },
           ]}
         >
           <Input.Password autoComplete="new-password" />
         </Form.Item>
 
         <Form.Item
-          label="Confirm Password"
+          label="Confirmer le mot de passe"
           name="confirmPassword"
           dependencies={["password"]}
           rules={[
@@ -117,12 +117,12 @@ const AddUser = () => {
           <Input.Password autoComplete="new-password" />
         </Form.Item>
 
-        <Form.Item label="Date Of Birth" name="dob">
+        <Form.Item label="Date de naissance" name="dob">
           <DatePicker style={{ width: "100%" }} />
         </Form.Item>
 
         <Form.Item
-          label="Account Type"
+          label="Type de compte"
           name="role"
           rules={[{ required: true, message: "Account type is required" }]}
         >
@@ -140,7 +140,7 @@ const AddUser = () => {
         </Form.Item>
 
         <Button type="primary" htmlType="submit">
-          Create
+          Créer
         </Button>
       </Form>
     </div>

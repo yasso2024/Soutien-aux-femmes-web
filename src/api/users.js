@@ -90,3 +90,13 @@ export async function listDonateurs() {
     throw new Error(error?.response?.data?.message || error.message);
   }
 }
+
+// DELETE USER
+export async function deleteUser(id) {
+  try {
+    const response = await axiosClient.delete(`/user/${id}`);
+    return response;
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || error.message || "Delete user failed");
+  }
+}

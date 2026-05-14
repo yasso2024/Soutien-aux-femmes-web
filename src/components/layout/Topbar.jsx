@@ -16,7 +16,7 @@ function Topbar() {
       }}
     >
       <Typography.Title level={4} style={{ margin: 0 }}>
-        Admin Dashboard
+  Tableau de bord d'administration
       </Typography.Title>
 
       <Space>

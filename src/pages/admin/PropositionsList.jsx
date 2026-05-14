@@ -2,6 +2,7 @@ import { App, Avatar, Button, Card, Input, Popconfirm, Space, Table, Tag, Typogr
 import { CheckOutlined, CloseOutlined, FileProtectOutlined, SearchOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { listPropositionsAide, updateStatutProposition } from "../../api/propositions";
+import { isFinalStatus } from "../../utils/statusHelpers";
 
 const { Title, Text } = Typography;
 const TEAL = "#0F9488";
@@ -140,7 +141,7 @@ function PropositionsList() {
       title: "Actions",
       key: "actions",
       render: (_, r) => {
-        const pending = r.statut === "PROPOSEE";
+        const isFinal = isFinalStatus(r.statut);
         return (
           <Space size={6}>
             <Popconfirm
@@ -148,14 +149,14 @@ function PropositionsList() {
               onConfirm={() => changeStatut(r._id, "ACCEPTEE")}
               okText="Oui"
               cancelText="Non"
-              disabled={!pending}
+              disabled={isFinal}
             >
               <Button
                 size="small"
                 icon={<CheckOutlined />}
-                style={{ color: "#10B981", borderColor: "#10B981" }}
+                style={isFinal ? {} : { color: "#10B981", borderColor: "#10B981" }}
                 loading={loadingId === r._id + "ACCEPTEE"}
-                disabled={!pending}
+                disabled={isFinal}
               >
                 Accepter
               </Button>
@@ -165,14 +166,14 @@ function PropositionsList() {
               onConfirm={() => changeStatut(r._id, "REFUSEE")}
               okText="Oui"
               cancelText="Non"
-              disabled={!pending}
+              disabled={isFinal}
             >
               <Button
                 size="small"
-                danger
+                danger={!isFinal}
                 icon={<CloseOutlined />}
                 loading={loadingId === r._id + "REFUSEE"}
-                disabled={!pending}
+                disabled={isFinal}
               >
                 Refuser
               </Button>

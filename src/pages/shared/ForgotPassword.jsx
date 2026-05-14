@@ -14,7 +14,7 @@ function ForgotPassword() {
 
             navigate("/login");
         } catch (error) {
-            message.error(error.response.data.message);
+            message.error(error.message || "Une erreur est survenue.");
         }
     };
     return (
@@ -22,7 +22,7 @@ function ForgotPassword() {
             <Row justify="center" align='middle' style={{ height: "100vh" }}>
                 <Col span={6} style={{ borderRadius: "13px", backgroundColor: "#FAFAFA", padding: 24, boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px" }}>
                     <Divider>
-                        Forgot Password
+                        Mot de passe oublié
                     </Divider>
                     <Form
                         layout="vertical"
@@ -39,10 +39,10 @@ function ForgotPassword() {
                         </Form.Item>
                         <div style={{ display: "flex", flexDirection: 'column', gap: 14 }}>
                             <Link to='/login'>
-                                Login Again ?
+                                Se connecter
                             </Link>
                             <Button type="primary" htmlType="submit">
-                                Send
+                                Envoyer
                             </Button>
                         </div>
                     </Form>
