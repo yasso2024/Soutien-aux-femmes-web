@@ -190,6 +190,9 @@ function AdminActionsSolidaires() {
                   <Tag color={affStatutColor[aff.statut] || "default"} style={{ borderRadius: 4, marginTop: 2, fontSize: 10 }}>
                     {affStatutLabel[aff.statut] ?? aff.statut}
                   </Tag>
+                  {aff.source === "INVITATION" && (
+                    <Tag color="blue" style={{ borderRadius: 4, fontSize: 10 }}>💌 Invitation</Tag>
+                  )}
                 </div>
               );
             })}

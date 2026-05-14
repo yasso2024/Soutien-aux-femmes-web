@@ -33,7 +33,7 @@ function Signup() {
       if (isAssociation) {
         payload.nomOrganisation = values.nomOrganisation;
         payload.firstName = values.nomOrganisation;
-        payload.lastName = "";
+        // omit lastName entirely so Zod's .optional() accepts it
         if (values.adresse) payload.adresse = values.adresse;
       } else {
         payload.firstName = values.firstName;
@@ -56,9 +56,15 @@ function Signup() {
       form.resetFields();
       navigate("/login");
     } catch (error) {
-      message.error(
-        error?.response?.data?.message || error.message || "Erreur lors de l'inscription"
-      );
+      const data = error?.response?.data;
+      const fieldErrors = data?.errors?.fieldErrors;
+      const detail = fieldErrors
+        ? Object.entries(fieldErrors)
+            .map(([f, msgs]) => `${f}: ${msgs.join(', ')}`)
+            .join(' | ')
+        : null;
+      console.error('[Signup] 400 details:', data);
+      message.error(detail || data?.message || error?.message || "Erreur lors de l'inscription");
     }
   }
 
