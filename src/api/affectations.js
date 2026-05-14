@@ -48,6 +48,14 @@ export async function refuserAffectation(id) {
   }
 }
 
+export async function terminerAffectation(id) {
+  try {
+    return await axiosClient.put(`/affectations/${id}`, { statut: "TERMINEE" });
+  } catch (error) {
+    throw new Error(error?.response?.data?.message || error.message);
+  }
+}
+
 export async function listActionsSolidaires() {
   try {
     return await axiosClient.get("/actions-solidaires");

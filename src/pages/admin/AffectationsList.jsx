@@ -3,11 +3,11 @@ import {
   Popconfirm, Select, Space, Table, Tag, Typography,
 } from "antd";
 import {
-  DeleteOutlined, PlusOutlined, SearchOutlined, TeamOutlined, CheckOutlined, CloseOutlined,
+  DeleteOutlined, PlusOutlined, SearchOutlined, TeamOutlined, CheckOutlined, CloseOutlined, ThunderboltOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import {
-  accepterAffectation, createAffectation, deleteAffectation, listActionsSolidaires, listAffectations, refuserAffectation,
+  accepterAffectation, createAffectation, deleteAffectation, listActionsSolidaires, listAffectations, refuserAffectation, terminerAffectation,
 } from "../../api/affectations";
 import { listBenevoles } from "../../api/users";
 
@@ -100,6 +100,18 @@ function AffectationsList() {
         prev.map((a) => (a._id === id ? { ...a, statut: "REFUSEE" } : a))
       );
       message.success("Affectation refusée");
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
+
+  const handleTerminer = async (id) => {
+    try {
+      await terminerAffectation(id);
+      setData((prev) =>
+        prev.map((a) => (a._id === id ? { ...a, statut: "TERMINEE" } : a))
+      );
+      message.success("Affectation terminée");
     } catch (err) {
       message.error(err.message);
     }
@@ -211,6 +223,22 @@ function AffectationsList() {
               disabled={r.statut !== "EN_ATTENTE"}
             >
               Refuser
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            title="Marquer comme terminée ?"
+            onConfirm={() => handleTerminer(r._id)}
+            okText="Oui"
+            cancelText="Non"
+            disabled={r.statut !== "ACCEPTEE"}
+          >
+            <Button
+              size="small"
+              icon={<ThunderboltOutlined />}
+              style={r.statut === "ACCEPTEE" ? { color: "#6366F1", borderColor: "#6366F1" } : {}}
+              disabled={r.statut !== "ACCEPTEE"}
+            >
+              Terminer
             </Button>
           </Popconfirm>
           <Popconfirm

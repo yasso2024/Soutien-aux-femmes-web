@@ -6,17 +6,31 @@ export const AuthContext = createContext(null);
 
 async function registerOneSignal(userId) {
   try {
-    const OS = window.OneSignal;
-    if (!OS) { console.warn("[OneSignal] SDK not loaded yet"); return; }
-    await OS.login(String(userId));
-    const subscriptionId = OS.User?.PushSubscription?.id;
-    console.log("[OneSignal] linked user:", userId, "| subscription id:", subscriptionId);
-    if (subscriptionId) {
-      await savePlayerID(subscriptionId);
-      console.log("[OneSignal] player id saved to backend:", subscriptionId);
-    } else {
-      console.warn("[OneSignal] no subscription id after login — user may not have opted in yet");
-    }
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    await new Promise((resolve, reject) => {
+      window.OneSignalDeferred.push(async function (OneSignal) {
+        try {
+          await OneSignal.login(String(userId));
+          const subscriptionId = OneSignal.User?.PushSubscription?.id;
+          console.log("[OneSignal] linked user:", userId, "| subscription id:", subscriptionId);
+          if (subscriptionId) {
+            await savePlayerID(subscriptionId);
+            console.log("[OneSignal] player id saved to backend:", subscriptionId);
+          } else {
+            console.warn("[OneSignal] no subscription id after login — user may not have opted in yet");
+          }
+          resolve();
+        } catch (err) {
+          // 409 = identity already linked — not a real error
+          if (err?.statusCode === 409 || err?.status === 409 || String(err?.message).includes('409')) {
+            console.log("[OneSignal] identity already linked for user", userId);
+            resolve();
+          } else {
+            reject(err);
+          }
+        }
+      });
+    });
   } catch (err) {
     console.warn("OneSignal registration failed:", err.message);
   }

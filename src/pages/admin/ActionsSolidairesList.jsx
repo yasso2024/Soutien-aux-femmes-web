@@ -23,6 +23,8 @@ import {
   changeActionStatut,
   deleteActionSolidaire,
 } from "../../api/actionSolidaires";
+import { listAffectations } from "../../api/affectations";
+import { isFinalStatus } from "../../utils/statusHelpers";
 
 const { Title, Text } = Typography;
 
@@ -42,16 +44,28 @@ const statutLabel = {
 
 function AdminActionsSolidaires() {
   const [data, setData]         = useState([]);
+  const [affMap, setAffMap]     = useState(new Map()); // actionId → affectations[]
   const [loading, setLoading]   = useState(true);
   const [loadingId, setLoadingId] = useState(null);
   const [search, setSearch]     = useState("");
   const { message }             = App.useApp();
 
   useEffect(() => {
-    listActionsSolidaires()
-      .then((res) => {
-        const actions = res.data?.actions ?? [];
+    Promise.all([listActionsSolidaires(), listAffectations()])
+      .then(([actRes, affRes]) => {
+        const actions = actRes.data?.actions ?? [];
         setData(Array.isArray(actions) ? actions : []);
+
+        const affectations = affRes.data?.affectations ?? [];
+        const map = new Map();
+        affectations.forEach((aff) => {
+          const actionId = aff.action?._id || aff.action;
+          if (!actionId) return;
+          const key = actionId.toString();
+          if (!map.has(key)) map.set(key, []);
+          map.get(key).push(aff);
+        });
+        setAffMap(map);
       })
       .catch((err) => message.error(err.message))
       .finally(() => setLoading(false));
@@ -149,11 +163,39 @@ function AdminActionsSolidaires() {
     {
       title: "Bénévoles",
       key: "benevoles",
-      render: (_, r) => (
-        <Tag color="purple" style={{ borderRadius: 6 }}>
-          {r.benevoles?.length ?? 0} bénévole{r.benevoles?.length !== 1 ? "s" : ""}
-        </Tag>
-      ),
+      width: 220,
+      render: (_, r) => {
+        const affs = affMap.get(r._id?.toString()) || [];
+        if (affs.length === 0) {
+          return <Text type="secondary" style={{ fontSize: 12 }}>0 bénévoles</Text>;
+        }
+        const affStatutColor = { EN_ATTENTE: "orange", ACCEPTEE: "green", REFUSEE: "red", TERMINEE: "default" };
+        const affStatutLabel = { EN_ATTENTE: "En attente", ACCEPTEE: "Acceptée", REFUSEE: "Refusée", TERMINEE: "Terminée" };
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {affs.map((aff) => {
+              const b = aff.benevole;
+              if (!b) return null;
+              const name = `${b.firstName || ""} ${b.lastName || ""}`.trim() || "—";
+              return (
+                <div key={aff._id} style={{
+                  padding: "4px 8px",
+                  background: "#f8fafc",
+                  borderRadius: 8,
+                  borderLeft: "3px solid " + (aff.statut === "ACCEPTEE" ? "#10B981" : aff.statut === "REFUSEE" ? "#EF4444" : "#F59E0B"),
+                }}>
+                  <div style={{ fontWeight: 600, fontSize: 12, color: "#0f172a" }}>{name}</div>
+                  {b.telephone && <div style={{ fontSize: 11, color: "#475569" }}>📞 {b.telephone}</div>}
+                  {b.email    && <div style={{ fontSize: 11, color: "#475569" }}>✉️ {b.email}</div>}
+                  <Tag color={affStatutColor[aff.statut] || "default"} style={{ borderRadius: 4, marginTop: 2, fontSize: 10 }}>
+                    {affStatutLabel[aff.statut] ?? aff.statut}
+                  </Tag>
+                </div>
+              );
+            })}
+          </div>
+        );
+      },
     },
     {
       title: "Statut",
@@ -175,8 +217,8 @@ function AdminActionsSolidaires() {
       title: "Actions",
       key: "actions",
       render: (_, r) => {
-        const pending  = r.statut === "EN_ATTENTE";
-        const validee  = r.statut === "VALIDEE";
+        const isFinal = isFinalStatus(r.statut);
+        const canTerminer = r.statut === "VALIDEE";
         return (
           <Space size={4} wrap>
             {/* Valider */}
@@ -185,14 +227,14 @@ function AdminActionsSolidaires() {
               onConfirm={() => changeStatut(r._id, "VALIDEE")}
               okText="Oui"
               cancelText="Non"
-              disabled={!pending}
+              disabled={isFinal}
             >
               <Button
                 size="small"
                 icon={<CheckOutlined />}
-                style={{ color: "#10B981", borderColor: "#10B981" }}
+                style={isFinal ? {} : { color: "#10B981", borderColor: "#10B981" }}
                 loading={loadingId === r._id + "VALIDEE"}
-                disabled={!pending}
+                disabled={isFinal}
               >
                 Valider
               </Button>
@@ -204,14 +246,14 @@ function AdminActionsSolidaires() {
               onConfirm={() => changeStatut(r._id, "REFUSEE")}
               okText="Oui"
               cancelText="Non"
-              disabled={!pending}
+              disabled={isFinal}
             >
               <Button
                 size="small"
-                danger
+                danger={!isFinal}
                 icon={<CloseOutlined />}
                 loading={loadingId === r._id + "REFUSEE"}
-                disabled={!pending}
+                disabled={isFinal}
               >
                 Refuser
               </Button>
@@ -223,18 +265,18 @@ function AdminActionsSolidaires() {
               onConfirm={() => changeStatut(r._id, "TERMINEE")}
               okText="Oui"
               cancelText="Non"
-              disabled={!validee}
+              disabled={!canTerminer}
             >
               <Button
                 size="small"
                 icon={<ThunderboltOutlined />}
                 style={
-                  validee
+                  canTerminer
                     ? { color: "#6366F1", borderColor: "#6366F1" }
                     : {}
                 }
                 loading={loadingId === r._id + "TERMINEE"}
-                disabled={!validee}
+                disabled={!canTerminer}
               >
                 Terminer
               </Button>

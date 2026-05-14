@@ -2,6 +2,7 @@ import { App, Avatar, Button, Card, Input, Popconfirm, Table, Tag, Typography } 
 import { CheckOutlined, DollarOutlined, SearchOutlined, CloseOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { confirmerDon, listDons, refuserDon } from "../../api/dons";
+import { isFinalStatus } from "../../utils/statusHelpers";
 
 const { Title, Text } = Typography;
 const GREEN = "#10B981";
@@ -148,21 +149,23 @@ function DonsList() {
     {
       title: "Action",
       key: "action",
-      render: (_, r) => (
+      render: (_, r) => {
+        const isFinal = isFinalStatus(r.statut);
+        return (
         <div style={{ display: "flex", gap: 8 }}>
           <Popconfirm
             title="Confirmer ce don ?"
             onConfirm={() => handleConfirm(r._id)}
             okText="Oui"
             cancelText="Non"
-            disabled={r.statut !== "EN_ATTENTE"}
+            disabled={isFinal}
           >
             <Button
               size="small"
               icon={<CheckOutlined />}
-              style={{ color: GREEN, borderColor: GREEN }}
+              style={isFinal ? {} : { color: GREEN, borderColor: GREEN }}
               loading={loadingId === r._id}
-              disabled={r.statut !== "EN_ATTENTE"}
+              disabled={isFinal}
             >
               Confirmer
             </Button>
@@ -172,20 +175,21 @@ function DonsList() {
             onConfirm={() => handleRefuse(r._id)}
             okText="Oui"
             cancelText="Non"
-            disabled={r.statut !== "EN_ATTENTE"}
+            disabled={isFinal}
           >
             <Button
               size="small"
-              danger
+              danger={!isFinal}
               icon={<CloseOutlined />}
               loading={loadingId === r._id}
-              disabled={r.statut !== "EN_ATTENTE"}
+              disabled={isFinal}
             >
               Refuser
             </Button>
           </Popconfirm>
         </div>
-      ),
+        );
+      },
     },
   ];
 

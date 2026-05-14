@@ -50,7 +50,7 @@ function Login() {
         }}
       >
         <Card
-          bodyStyle={{ padding: 0 }}
+          styles={{ body: { padding: 0 } }}
           style={{ flex: 1, maxWidth: "100%", overflow: "hidden" }}
         >
           <img
